@@ -10,7 +10,7 @@ import sqlite3
 # Cổng dịch vụ
 RIDER_PORT = 3000
 DRIVER_PORT = 3002
-WS_PORT = 3001
+WS_PORT = int(os.environ.get("PORT", 3001))
 
 # Danh sách kết nối trực tiếp thời gian thực
 connected_riders = {}  # rider_id -> websocket
@@ -115,12 +115,13 @@ def start_driver_server():
         print(f"[HTTP] Driver App đang chạy tại http://localhost:{DRIVER_PORT}/")
         httpd.serve_forever()
 
-# Chạy hai Web Server ở hai luồng độc lập
-rider_thread = threading.Thread(target=start_rider_server, daemon=True)
-rider_thread.start()
+# Chạy hai Web Server ở hai luồng độc lập (chỉ chạy khi ở local)
+if "RENDER" not in os.environ:
+    rider_thread = threading.Thread(target=start_rider_server, daemon=True)
+    rider_thread.start()
 
-driver_thread = threading.Thread(target=start_driver_server, daemon=True)
-driver_thread.start()
+    driver_thread = threading.Thread(target=start_driver_server, daemon=True)
+    driver_thread.start()
 
 
 # ----------------- 3. REAL-TIME SERVER (WEBSOCKET) -----------------
