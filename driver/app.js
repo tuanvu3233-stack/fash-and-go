@@ -48,7 +48,11 @@ function showConnectionWarning() {
 function connectWebSocket() {
   const host = window.location.hostname;
   const savedWsUrl = localStorage.getItem("custom_ws_url");
-  const wsUrl = savedWsUrl || `ws://${host}:3001`;
+  let defaultWsUrl = `ws://${host}:3001`;
+  if (host.includes("vercel.app")) {
+    defaultWsUrl = "wss://fash-and-go.onrender.com";
+  }
+  const wsUrl = savedWsUrl || defaultWsUrl;
   
   console.log(`[WS] Driver App đang kết nối tới máy chủ: ${wsUrl}`);
   ws = new WebSocket(wsUrl);
