@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fash And Go - Hệ Sinh Thái Gọi Xe Công Nghệ Thế Hệ Mới</title>
+  <!-- Outfit Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --font-main: 'Outfit', sans-serif;
+      --bg-primary: #0a0f1d;
+      --bg-card: rgba(19, 27, 46, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      
+      --accent-rider: #f97316; /* Neon Orange */
+      --accent-driver: #00b1a9; /* Neon Cyan */
+      
+      --radius-lg: 24px;
+      --radius-md: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 177, 169, 0.08) 0%, transparent 40%);
+      overflow-x: hidden;
+    }
+
+    /* Container */
+    .container {
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+      margin-top: auto;
+      margin-bottom: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      padding: 20px 0;
+    }
+
+    /* Logo & Title */
+    .brand-title {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .brand-title span.rider {
+      color: var(--accent-rider);
+      text-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+    }
+
+    .brand-title span.driver {
+      color: var(--accent-driver);
+      text-shadow: 0 0 20px rgba(0, 177, 169, 0.3);
+    }
+
+    .brand-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* App Selection Grid */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      width: 100%;
+      max-width: 680px;
+      margin-top: 16px;
+    }
+
+    .app-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .app-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      transition: all 0.3s ease;
+    }
+
+    /* Rider Card Specifics */
+    .card-rider::before { background: var(--accent-rider); }
+    .card-rider:hover {
+      border-color: rgba(249, 115, 22, 0.3);
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(249, 115, 22, 0.15);
+    }
+
+    /* Driver Card Specifics */
+    .card-driver::before { background: var(--accent-driver); }
+    .card-driver:hover {
+      border-color: rgba(0, 177, 169, 0.3);
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0, 177, 169, 0.15);
+    }
+
+    .icon-wrapper {
+      width: 70px;
+      height: 70px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      transition: transform 0.3s ease;
+    }
+
+    .card-rider:hover .icon-wrapper {
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .card-driver:hover .icon-wrapper {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .card-rider .icon-wrapper {
+      background-color: rgba(249, 115, 22, 0.1);
+      color: var(--accent-rider);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+    }
+
+    .card-driver .icon-wrapper {
+      background-color: rgba(0, 177, 169, 0.1);
+      color: var(--accent-driver);
+      border: 1px solid rgba(0, 177, 169, 0.2);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      margin-top: 8px;
+    }
+
+    .card-rider .btn-action {
+      background-color: rgba(249, 115, 22, 0.15);
+      color: var(--accent-rider);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    .card-rider:hover .btn-action {
+      background-color: var(--accent-rider);
+      color: #fff;
+    }
+
+    .card-driver .btn-action {
+      background-color: rgba(0, 177, 169, 0.15);
+      color: var(--accent-driver);
+      border: 1px solid rgba(0, 177, 169, 0.3);
+    }
+
+    .card-driver:hover .btn-action {
+      background-color: var(--accent-driver);
+      color: #fff;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+      border-top: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 600px;
+      padding-top: 24px;
+      margin-top: auto;
+    }
+
+    .footer strong {
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 600px) {
+      .app-grid {
+        grid-template-columns: 1fr;
+      }
+      .brand-title {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div>
+      <h1 class="brand-title"><span class="rider">Fash And Go</span> & <span class="driver">FAG Driver</span></h1>
+      <p class="brand-subtitle">
+        Trải nghiệm dịch vụ đặt xe siêu tốc độ và giải pháp quản trị thu nhập hiệu suất dành riêng cho đối tác tài xế thế hệ mới.
+      </p>
+    </div>
+
+    <div class="app-grid">
+      <!-- Rider Card -->
+      <a href="./rider/" class="app-card card-rider">
+        <div class="icon-wrapper">
+          <i data-lucide="navigation"></i>
+        </div>
+        <div class="card-title">Fash And Go</div>
+        <div class="card-desc">Ứng dụng đặt xe máy, ô tô dành cho khách hàng với biểu phí linh hoạt, điều hướng nhanh chóng.</div>
+        <div class="btn-action">
+          Đặt Xe Ngay <i data-lucide="arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Driver Card -->
+      <a href="./driver/" class="app-card card-driver">
+        <div class="icon-wrapper">
+          <i data-lucide="gauge"></i>
+        </div>
+        <div class="card-title">FAG Driver</div>
+        <div class="card-desc">Ứng dụng dành cho tài xế giúp nhận cuốc, thống kê thu nhập, tính tỷ lệ hủy/nhận chuyến Grab-like.</div>
+        <div class="btn-action">
+          Kênh Tài Xế <i data-lucide="arrow-right"></i>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Hệ sinh thái gọi xe được phát triển chuyên nghiệp.</p>
+    <p style="margin-top: 4px;"><strong>Power by Le Tuan Vu đã đăng kí</strong></p>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

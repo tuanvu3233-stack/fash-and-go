@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fash And Go - Đặt Xe Tốc Độ</title>
+  
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- PWA Meta tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fash And Go">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="theme-color" content="#0a0f1d">
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <img src="logo.png" alt="Fash And Go Logo" class="app-header-logo">
+        <div class="logo-text">
+          <h1>Fash And Go</h1>
+          <p>Ứng dụng đặt xe tốc độ</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="user-display-name" class="user-name-tag hidden">Xin chào, Khách!</span>
+        <button id="settings-btn" class="btn-icon" title="Cấu hình server">
+          <i data-lucide="settings"></i>
+        </button>
+        <button id="theme-toggle" class="btn-icon">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Section -->
+    <main class="app-main">
+      <!-- Control Panel -->
+      <section class="control-panel">
+        
+        <!-- User Info & Logout (visible when logged in) -->
+        <div id="user-profile-card" class="card hidden">
+          <div class="profile-header-box">
+            <span class="user-avatar-icon">👤</span>
+            <div>
+              <h3 id="profile-name">Họ Tên Khách</h3>
+              <p id="profile-contact">email@example.com</p>
+            </div>
+            <button id="logout-btn" class="btn-logout" title="Đăng xuất"><i data-lucide="log-out"></i></button>
+          </div>
+        </div>
+
+        <!-- Booking Panel -->
+        <div id="booking-section" class="card">
+          <h2 class="section-title"><i data-lucide="map-pin"></i> Bạn muốn đi đâu?</h2>
+          
+          <div class="input-group">
+            <label>Điểm đón</label>
+            <div class="input-wrapper">
+              <span class="dot green-dot"></span>
+              <input type="text" id="pickup-input" placeholder="Chọn điểm đón của bạn..." autocomplete="off">
+              <button id="clear-pickup" class="clear-btn"><i data-lucide="x"></i></button>
+            </div>
+            <div id="pickup-suggestions" class="suggestions-list hidden"></div>
+          </div>
+          
+          <div class="input-group">
+            <label>Điểm đến</label>
+            <div class="input-wrapper">
+              <span class="dot red-dot"></span>
+              <input type="text" id="destination-input" placeholder="Chọn điểm đến..." autocomplete="off">
+              <button id="clear-destination" class="clear-btn"><i data-lucide="x"></i></button>
+            </div>
+            <div id="destination-suggestions" class="suggestions-list hidden"></div>
+          </div>
+
+          <!-- Vehicle Choice Tabs -->
+          <div id="fare-estimate-box" class="fare-estimate hidden">
+            <!-- Category Tabs: 2-wheel vs 4-wheel -->
+            <div class="brand-tabs">
+              <button class="tab-btn active" id="tab-2wheel" onclick="switchVehicleCategory('bike')">🏍️ Xe 2 Bánh</button>
+              <button class="tab-btn" id="tab-4wheel" onclick="switchVehicleCategory('car')">🚗 Xe 4 Bánh</button>
+            </div>
+
+            <div id="vehicle-list" class="vehicle-list">
+              <!-- Rendered via JS -->
+            </div>
+
+            <button id="book-btn" class="btn btn-primary" disabled>
+              <i data-lucide="send"></i> Đặt Chuyến Ngay
+            </button>
+          </div>
+        </div>
+
+        <!-- Radar Finding Driver Panel -->
+        <div id="searching-section" class="card hidden">
+          <div class="radar-container">
+            <div class="radar-circle"></div>
+            <div class="radar-circle delay-1"></div>
+            <div class="radar-circle delay-2"></div>
+            <span class="radar-icon">⚡</span>
+          </div>
+          <div class="searching-text">
+            <h3>Đang tìm tài xế...</h3>
+            <p>Yêu cầu của bạn đang được kết nối trực tiếp đến các tài xế gần đây.</p>
+          </div>
+          <button id="cancel-search-btn" class="btn btn-secondary">Hủy đặt xe</button>
+        </div>
+
+        <!-- Driver Matched & Trip Active Panel -->
+        <div id="trip-section" class="card hidden">
+          <div class="status-banner" id="trip-status-banner">
+            Tài xế đang đến điểm đón
+          </div>
+          <div class="driver-card">
+            <div class="driver-photo">👨‍✈️</div>
+            <div class="driver-details">
+              <h3 id="driver-name">Nguyễn Văn A</h3>
+              <p id="driver-car">Yamaha Exciter • 29X-123.45</p>
+              <div class="driver-rating"><span style="color:#f59e0b">⭐</span> <span id="driver-stars-val">5.0</span></div>
+            </div>
+          </div>
+          <div class="trip-action-info">
+            <p id="trip-eta">Ước tính khoảng cách: <span id="driver-distance">---</span></p>
+          </div>
+          <button id="cancel-active-btn" class="btn btn-secondary">Hủy chuyến đi</button>
+        </div>
+
+        <!-- Trip Completed Panel -->
+        <div id="completed-section" class="card hidden">
+          <div class="completed-header">
+            <span class="success-icon">🎉</span>
+            <h2>Chuyến Đi Hoàn Thành!</h2>
+            <p>Cảm ơn bạn đã lựa chọn sử dụng dịch vụ của chúng tôi.</p>
+          </div>
+          <div class="bill-details">
+            <div class="bill-row">
+              <span>Hình thức thanh toán:</span>
+              <span>Tiền mặt</span>
+            </div>
+            <div class="bill-row total">
+              <span>Tổng tiền cước:</span>
+              <span id="completed-fare">50.000đ</span>
+            </div>
+          </div>
+          <div class="rating-box">
+            <p>Đánh giá tài xế của bạn</p>
+            <div class="stars" id="stars-container">
+              <span data-star="1" onclick="setStar(1)">⭐</span>
+              <span data-star="2" onclick="setStar(2)">⭐</span>
+              <span data-star="3" onclick="setStar(3)">⭐</span>
+              <span data-star="4" onclick="setStar(4)">⭐</span>
+              <span data-star="5" onclick="setStar(5)">⭐</span>
+            </div>
+          </div>
+          <button id="new-trip-btn" class="btn btn-primary">Đặt Chuyến Đi Mới</button>
+        </div>
+
+        <!-- App Footer Copyright -->
+        <footer class="app-brand-footer">
+          Power by Le Tuan Vu đã đăng kí
+        </footer>
+      </section>
+
+      <!-- Map Panel -->
+      <section class="map-panel">
+        <div id="map"></div>
+      </section>
+    </main>
+
+    <!-- Auth Overlay (Sign In / Sign Up) -->
+    <div id="auth-overlay" class="overlay">
+      <div class="auth-modal">
+        <img src="logo.png" alt="Fash And Go Logo" class="auth-logo">
+        <h2 id="auth-title">Đăng Nhập Fash And Go</h2>
+        <p class="auth-subtitle">Đặt xe siêu tốc & an toàn</p>
+
+        <!-- Login Form -->
+        <div id="login-form-box">
+          <div class="auth-input-group">
+            <label>Email hoặc Số điện thoại</label>
+            <input type="text" id="login-account" placeholder="Nhập email hoặc số điện thoại...">
+          </div>
+          <div class="auth-input-group">
+            <label>Mật khẩu</label>
+            <input type="password" id="login-password" placeholder="Nhập mật khẩu...">
+          </div>
+          <button id="submit-login-btn" class="btn-auth-submit">Đăng Nhập</button>
+          <p class="auth-switch-text">Chưa có tài khoản? <span id="switch-to-signup">Đăng ký ngay</span></p>
+        </div>
+
+        <!-- Register Form -->
+        <div id="signup-form-box" class="hidden">
+          <div class="auth-input-group">
+            <label>Họ và Tên</label>
+            <input type="text" id="signup-name" placeholder="Nhập họ và tên...">
+          </div>
+          <div class="auth-input-group">
+            <label>Email hoặc Số điện thoại</label>
+            <input type="text" id="signup-account" placeholder="Nhập email hoặc số điện thoại...">
+          </div>
+          <div class="auth-input-group">
+            <label>Mật khẩu</label>
+            <input type="password" id="signup-password" placeholder="Tạo mật khẩu...">
+          </div>
+          <button id="submit-signup-btn" class="btn-auth-submit">Đăng Ký</button>
+          <p class="auth-switch-text">Đã có tài khoản? <span id="switch-to-login">Đăng nhập</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <script src="app.js"></script>
+</body>
+</html>

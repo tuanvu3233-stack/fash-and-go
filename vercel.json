@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "rider/**/*", "use": "@vercel/static" },
+    { "src": "driver/**/*", "use": "@vercel/static" }
+  ]
+}
