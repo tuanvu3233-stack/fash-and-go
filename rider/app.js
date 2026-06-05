@@ -590,22 +590,29 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Nút cấu hình máy chủ WebSocket
   const settingsBtn = document.getElementById("settings-btn");
-  if (settingsBtn) {
-    settingsBtn.addEventListener("click", () => {
-      const host = window.location.hostname;
-      const currentUrl = localStorage.getItem("custom_ws_url") || `ws://${host}:3001`;
-      const newUrl = prompt("Cấu hình địa chỉ máy chủ Fash And Go:\n(Nhập ws:// hoặc wss:// kèm cổng, để trống để reset mặc định)", currentUrl);
-      
-      if (newUrl !== null) {
-        const trimmed = newUrl.trim();
-        if (trimmed) {
-          localStorage.setItem("custom_ws_url", trimmed);
-        } else {
-          localStorage.removeItem("custom_ws_url");
-        }
-        alert("Đã lưu cấu hình server mới. Trang web sẽ tải lại.");
-        window.location.reload();
+  const authSettingsBtn = document.getElementById("auth-settings-btn");
+  
+  const openSettings = () => {
+    const host = window.location.hostname;
+    let defaultWsUrl = `ws://${host}:3001`;
+    if (host.includes("vercel.app")) {
+      defaultWsUrl = "wss://fash-and-go.onrender.com";
+    }
+    const currentUrl = localStorage.getItem("custom_ws_url") || defaultWsUrl;
+    const newUrl = prompt("Cấu hình địa chỉ máy chủ Fash And Go:\n(Nhập ws:// hoặc wss:// kèm cổng, để trống để reset mặc định)", currentUrl);
+    
+    if (newUrl !== null) {
+      const trimmed = newUrl.trim();
+      if (trimmed) {
+        localStorage.setItem("custom_ws_url", trimmed);
+      } else {
+        localStorage.removeItem("custom_ws_url");
       }
-    });
-  }
+      alert("Đã lưu cấu hình server mới. Trang web sẽ tải lại.");
+      window.location.reload();
+    }
+  };
+
+  if (settingsBtn) settingsBtn.addEventListener("click", openSettings);
+  if (authSettingsBtn) authSettingsBtn.addEventListener("click", openSettings);
 });
